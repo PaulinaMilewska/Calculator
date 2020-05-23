@@ -23,10 +23,10 @@ public class Main {
         for (int i = 0; i < sourceStringToChars.size(); i = i) {
             if (sourceStringToChars.get(i).toString().matches("[0-9]") | sourceStringToChars.get(i) == '.') {
                 // wyrzucenie 2 linijek poza pętlę do while aby nie tworzyły się puste Stringi
-                String numberToAddToList = "";
-                numbersAndCharsList.add(numberToAddToList);
-                do {
 
+                do {
+                    String numberToAddToList = "";
+                    numbersAndCharsList.add(numberToAddToList);
                     String partialNumber = numbersAndCharsList.get(lastListIndex);
                     numberToAddToList = partialNumber + sourceStringToChars.get(i);
                     numbersAndCharsList.set(lastListIndex, numberToAddToList);
@@ -276,6 +276,8 @@ public class Main {
                 char penultimateChar = substringResult.charAt(lastCharIndex - 1);
                 String substringResultRound = "";
                 BigDecimal roundResult = null;
+
+                // zaokrąglanie niepoprawne jeśli penultimateChar = 9
                 if (lastChar == '5' | lastChar == '6' | lastChar == '7' | lastChar == '8' | lastChar == '9') {
                     int intPenultimateChar = Character.getNumericValue(penultimateChar);
                     for (int i = 0; i < 9; i++) {
@@ -344,7 +346,7 @@ public class Main {
     private static void fillMapWithListValuesAsValuesAndIndexesAsKeys(List<String> numbersAndCharsList, TreeMap<Integer, Double> numbersMap) {
         for (int i = 0; i < numbersAndCharsList.size(); i++) {
             String stringToParse = numbersAndCharsList.get(i);
-            if (stringToParse.matches("[0-9]+.*[0-9]*")) {
+            if (stringToParse.matches("-*[0-9]+.*[0-9]*")) {
                 double parseString = Double.parseDouble(stringToParse);
                 numbersMap.put(i, parseString);
             }
