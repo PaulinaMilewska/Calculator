@@ -2,7 +2,6 @@ package com.task;
 
 
 import java.math.BigDecimal;
-import java.sql.Wrapper;
 import java.util.*;
 
 public class Main {
@@ -23,9 +22,11 @@ public class Main {
         int lastListIndex = 0;
         for (int i = 0; i < sourceStringToChars.size(); i = i) {
             if (sourceStringToChars.get(i).toString().matches("[0-9]") | sourceStringToChars.get(i) == '.') {
+                // wyrzucenie 2 linijek poza pętlę do while aby nie tworzyły się puste Stringi
+                String numberToAddToList = "";
+                numbersAndCharsList.add(numberToAddToList);
                 do {
-                    String numberToAddToList = "";
-                    numbersAndCharsList.add(numberToAddToList);
+
                     String partialNumber = numbersAndCharsList.get(lastListIndex);
                     numberToAddToList = partialNumber + sourceStringToChars.get(i);
                     numbersAndCharsList.set(lastListIndex, numberToAddToList);
@@ -58,13 +59,7 @@ public class Main {
         // 3. utworzenie mapy liczb- KEY: index liczby w numbersAndCharsList, VALUE: wartość double liczby
         TreeMap<Integer, Double> numbersMap = new TreeMap<>();
 
-        for (int i = 0; i < numbersAndCharsList.size(); i++) {
-            String stringToParse = numbersAndCharsList.get(i);
-            if (stringToParse.matches("[0-9]+.*[0-9]*")) {
-                double parseString = Double.parseDouble(stringToParse);
-                numbersMap.put(i, parseString);
-            }
-        }
+        fillMapWithListValuesAsValuesAndIndexesAsKeys(numbersAndCharsList, numbersMap);
 
         // 4. znalezienie równania w nawiasach: najbardziej zagnieżdżonego lub ostatniego
         if (numbersAndCharsList.contains("{")) {
@@ -100,24 +95,9 @@ public class Main {
 
                             // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                             // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                            if (ceiling != numbersMap.lastKey()) {
-                                for (Integer v : numbersMap.keySet()) {
-                                    if (v >= ceiling & v < numbersMap.lastKey()) {
-                                        int temp = numbersMap.higherKey(v);
-                                        double tempor = numbersMap.get(temp);
-                                        numbersMap.replace(v, tempor);
-                                        v = temp;
-                                    } else if (v == numbersMap.lastKey()) {
-                                        numbersMap.remove(v);
-                                    }
-                                }
-                            } else {
-                                numbersMap.remove(ceiling);
-                            }
+                            changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
 
-                            numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                            numbersAndCharsList.remove(i);
-                            numbersAndCharsList.remove(i);
+                            updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                             closingBracketIndex = closingBracketIndex - 2;
 
                         } else if (numbersAndCharsList.get(i).equals("*")) {
@@ -130,24 +110,9 @@ public class Main {
 
                             // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                             // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                            if (ceiling != numbersMap.lastKey()) {
-                                for (Integer v : numbersMap.keySet()) {
-                                    if (v >= ceiling & v < numbersMap.lastKey()) {
-                                        int temp = numbersMap.higherKey(v);
-                                        double tempor = numbersMap.get(temp);
-                                        numbersMap.replace(v, tempor);
-                                        v = temp;
-                                    } else if (v == numbersMap.lastKey()) {
-                                        numbersMap.remove(v);
-                                    }
-                                }
-                            } else {
-                                numbersMap.remove(ceiling);
-                            }
+                            changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
 
-                            numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                            numbersAndCharsList.remove(i);
-                            numbersAndCharsList.remove(i);
+                            updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                             closingBracketIndex = closingBracketIndex - 2;
                         }
 
@@ -175,24 +140,9 @@ public class Main {
 
                             // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                             // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                            if (ceiling != numbersMap.lastKey()) {
-                                for (Integer v : numbersMap.keySet()) {
-                                    if (v >= ceiling & v < numbersMap.lastKey()) {
-                                        int temp = numbersMap.higherKey(v);
-                                        double tempor = numbersMap.get(temp);
-                                        numbersMap.replace(v, tempor);
-                                        v = temp;
-                                    } else if (v == numbersMap.lastKey()) {
-                                        numbersMap.remove(v);
-                                    }
-                                }
-                            } else {
-                                numbersMap.remove(ceiling);
-                            }
+                            changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
 
-                            numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                            numbersAndCharsList.remove(i);
-                            numbersAndCharsList.remove(i);
+                            updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                             closingBracketIndex = closingBracketIndex - 2;
                         } else if (numbersAndCharsList.get(i).equals("-")) {
 
@@ -203,24 +153,9 @@ public class Main {
                             numbersMap.replace(floor, partResult);
                             // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                             // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                            if (ceiling != numbersMap.lastKey()) {
-                                for (Integer v : numbersMap.keySet()) {
-                                    if (v >= ceiling & v < numbersMap.lastKey()) {
-                                        int temp = numbersMap.higherKey(v);
-                                        double tempor = numbersMap.get(temp);
-                                        numbersMap.replace(v, tempor);
-                                        v = temp;
-                                    } else if (v == numbersMap.lastKey()) {
-                                        numbersMap.remove(v);
-                                    }
-                                }
-                            } else {
-                                numbersMap.remove(ceiling);
-                            }
+                            changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
 
-                            numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                            numbersAndCharsList.remove(i);
-                            numbersAndCharsList.remove(i);
+                            updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                             closingBracketIndex = closingBracketIndex - 2;
 
                         }
@@ -232,13 +167,7 @@ public class Main {
 
                 // nowa mapa ponieważ odpowiadające liczbom index-y w liście i KEY w mapie nie są już równe
                 numbersMap = new TreeMap<>();
-                for (int i = 0; i < numbersAndCharsList.size(); i++) {
-                    String tt = numbersAndCharsList.get(i);
-                    if (tt.matches("-*[0-9]+.*[0-9]*")) {
-                        double parseString = Double.parseDouble(tt);
-                        numbersMap.put(i, Double.parseDouble(tt));
-                    }
-                }
+                fillMapWithListValuesAsValuesAndIndexesAsKeys(numbersAndCharsList, numbersMap);
 
             } while (numbersAndCharsList.contains("{"));
 
@@ -273,24 +202,9 @@ public class Main {
                     numbersMap.replace(floor, partResult);
                     // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                     // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                    if (ceiling != numbersMap.lastKey()) {
-                        for (Integer v : numbersMap.keySet()) {
-                            if (v >= ceiling & v < numbersMap.lastKey()) {
-                                int temp = numbersMap.higherKey(v);
-                                double tempor = numbersMap.get(temp);
-                                numbersMap.replace(v, tempor);
-                                v = temp;
-                            } else if (v == numbersMap.lastKey()) {
-                                numbersMap.remove(v);
-                            }
-                        }
-                    } else {
-                        numbersMap.remove(ceiling);
-                    }
+                    changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
 
-                    numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                    numbersAndCharsList.remove(i);
-                    numbersAndCharsList.remove(i);
+                    updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                     i = 0;
 
                 } else if (numbersAndCharsList.get(i).equals("/")) {
@@ -302,23 +216,8 @@ public class Main {
                     numbersMap.replace(floor, partResult);
                     // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
                     // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                    if (ceiling != numbersMap.lastKey()) {
-                        for (Integer v : numbersMap.keySet()) {
-                            if (v >= ceiling & v < numbersMap.lastKey()) {
-                                int temp = numbersMap.higherKey(v);
-                                double tempor = numbersMap.get(temp);
-                                numbersMap.replace(v, tempor);
-                                v = temp;
-                            } else if (v == numbersMap.lastKey()) {
-                                numbersMap.remove(v);
-                            }
-                        }
-                    } else {
-                        numbersMap.remove(ceiling);
-                    }
-                    numbersAndCharsList.set(i - 1, String.valueOf(partResult));
-                    numbersAndCharsList.remove(i);
-                    numbersAndCharsList.remove(i);
+                    changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
+                    updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, i);
                     i = 0;
                 }
             }
@@ -337,25 +236,8 @@ public class Main {
                     partResult = numbersMap.get(floor) + (numbersMap.get(ceiling));
 
                     numbersMap.replace(floor, partResult);
-                    if (ceiling != numbersMap.lastKey()) {
-                        // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
-                        // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                        for (Integer v : numbersMap.keySet()) {
-                            if (v >= ceiling & v < numbersMap.lastKey()) {
-                                int temp = numbersMap.higherKey(v);
-                                double tempor = numbersMap.get(temp);
-                                numbersMap.replace(v, tempor);
-                                v = temp;
-                            } else if (v == numbersMap.lastKey()) {
-                                numbersMap.remove(v);
-                            }
-                        }
-                    } else {
-                        numbersMap.remove(ceiling);
-                    }
-                    numbersAndCharsList.set(lastPlusIndex - 1, String.valueOf(partResult));
-                    numbersAndCharsList.remove(lastPlusIndex);
-                    numbersAndCharsList.remove(lastPlusIndex);
+                    changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
+                    updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, lastPlusIndex);
                     i = 0;
 
                 } else if (numbersAndCharsList.get(i).equals("-")) {
@@ -366,25 +248,10 @@ public class Main {
                     int ceiling = numbersMap.ceilingKey(lastMinusIndex);
                     partResult = numbersMap.get(floor) - (numbersMap.get(ceiling));
                     numbersMap.replace(floor, partResult);
-                    if (ceiling != numbersMap.lastKey()) {
-                        // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
-                        // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
-                        for (Integer v : numbersMap.keySet()) {
-                            if (v >= ceiling & v < numbersMap.lastKey()) {
-                                int temp = numbersMap.higherKey(v);
-                                double tempor = numbersMap.get(temp);
-                                numbersMap.replace(v, tempor);
-                                v = temp;
-                            } else if (v == numbersMap.lastKey()) {
-                                numbersMap.remove(v);
-                            }
-                        }
-                    } else {
-                        numbersMap.remove(ceiling);
-                    }
-                    numbersAndCharsList.set(lastMinusIndex - 1, String.valueOf(partResult));
-                    numbersAndCharsList.remove(lastMinusIndex);
-                    numbersAndCharsList.remove(lastMinusIndex);
+
+                    changeKeyInMapToCorrespondingIndexInList(numbersMap, ceiling);
+
+                    updateValuesInListAfterMathOperation(numbersAndCharsList, partResult, lastMinusIndex);
 
                     i = 0;
                 }
@@ -474,6 +341,42 @@ public class Main {
         return result;
     }
 
+    private static void fillMapWithListValuesAsValuesAndIndexesAsKeys(List<String> numbersAndCharsList, TreeMap<Integer, Double> numbersMap) {
+        for (int i = 0; i < numbersAndCharsList.size(); i++) {
+            String stringToParse = numbersAndCharsList.get(i);
+            if (stringToParse.matches("[0-9]+.*[0-9]*")) {
+                double parseString = Double.parseDouble(stringToParse);
+                numbersMap.put(i, parseString);
+            }
+        }
+    }
+
+    private static void updateValuesInListAfterMathOperation(List<String> numbersAndCharsList, double partResult, int lastPlusIndex) {
+        numbersAndCharsList.set(lastPlusIndex - 1, String.valueOf(partResult));
+        numbersAndCharsList.remove(lastPlusIndex);
+        numbersAndCharsList.remove(lastPlusIndex);
+    }
+
+
+    // zmiana KEY w numbersMap na wartość równą index-owi w numbersAndCharsList wartości odpowiadającej VALUE
+    // umieszczenie wyniku działania w numbersAndCharsList powoduje zmianę indexu wartości będących liczbami w mapie
+    private static void changeKeyInMapToCorrespondingIndexInList(TreeMap<Integer, Double> numbersMap, int ceiling) {
+        if (ceiling != numbersMap.lastKey()) {
+            for (Integer v : numbersMap.keySet()) {
+                if (v >= ceiling & v < numbersMap.lastKey()) {
+                    int temp = numbersMap.higherKey(v);
+                    double tempor = numbersMap.get(temp);
+                    numbersMap.replace(v, tempor);
+                    v = temp;
+                } else if (v == numbersMap.lastKey()) {
+                    numbersMap.remove(v);
+                }
+            }
+        } else {
+            numbersMap.remove(ceiling);
+        }
+    }
+
     public static void main(String[] args) {
 
 
@@ -483,11 +386,11 @@ public class Main {
         double d = 6 * (3 / 6.01) / 33 * (6 - 2) * 2.01 - 7.01 / 2;
         double e = 6 * 3 / 6.01 / (33 * (6 - 12)) - 2 * 2.01 - 7.01 / 2;
 
-//        System.out.println("a: " + a);
-//        System.out.println("b: " + b);
-//        System.out.println("c: " + c);
-//        System.out.println("d: " + d);
-//        System.out.println("e: " + e);
+        System.out.println("a: " + a);
+        System.out.println("b: " + b);
+        System.out.println("c: " + c);
+        System.out.println("d: " + d);
+        System.out.println("e: " + e);
 
 //        System.out.println(calc("2 * 3 / 6 - 1 * 2 + 7", 2));  // a
 
