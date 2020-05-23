@@ -1,0 +1,14 @@
+# Default ignored files
+/workspace.xml
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.idea
+*.iws
+*.iml
+*.ipr
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
